@@ -33,8 +33,8 @@ const server = http.createServer((req, res) => {
                         if (!/^[a-z]+\/[a-z]+$/.test(imageName)) {
                             throw new Error('Invalid image name: ' + imageName);
                         }
-                        ls = execSync(`docker pull ${imageName} && docker service update $(docker service ls|grep ${imageName} | awk '{print $1}')`);
-
+                        ls = execSync(`docker pull ${imageName} && docker service update --force $(docker service ls|grep ${imageName} | awk '{print $1}')`);
+                        console.log(ls);
                         request.post({
                             url: dataArray.callback_url,
                             json: true,
