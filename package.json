@@ -1,0 +1,17 @@
+{
+  "name": "hubhook",
+  "version": "0.0.1",
+  "description": "Listen to Docker Hub webhooks and update Docker services",
+  "main": "app.js",
+  "repository": "https://github.com/psmb/hubhook",
+  "author": "Dmitri Pisarev",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7"
+  }
+}
