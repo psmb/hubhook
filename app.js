@@ -1,6 +1,6 @@
 const http = require('http');
 const request = require('request-promise-native');
-const {execSync} = require('child_process');
+const {exec} = require('child_process');
 
 const getPost = (req) => {
     return new Promise((resolve, reject) => {
