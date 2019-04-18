@@ -28,13 +28,26 @@ const server = http.createServer((req, res) => {
                 if (data) {
                     const dataArray = JSON.parse(data);
                     try {
-                        console.log(dataArray);
                         const imageName = dataArray.repository.repo_name;
-                        if (!/^[a-z]+\/[a-z]+$/.test(imageName)) {
-                            throw new Error('Invalid image name: ' + imageName);
+                        const tag = dataArray.push_data.tag;
+                        if (tag === 'latest') {
+                            if (!/^[a-z]+\/[a-z]+$/.test(imageName)) {
+                                throw new Error('Invalid image name: ' + imageName);
+                            }
+                            console.log(`Deploying ${imageName}...`);
+                            ls = exec(
+                                `docker pull ${imageName} && docker service update --image ${imageName}:latest $(docker service ls|grep ${imageName} | awk '{print $1}')`,
+                                {},
+                                (error, stdout, stderr) => {
+                                    if (error) {
+                                        console.error(`exec error: ${error}`);
+                                        return;
+                                    }
+                                    console.log(`stdout: ${stdout}`);
+                                    console.log(`stderr: ${stderr}`);
+                                }
+                            );
                         }
-                        ls = execSync(`docker pull ${imageName} && docker service update --force $(docker service ls|grep ${imageName} | awk '{print $1}')`);
-                        console.log(ls);
                         request.post({
                             url: dataArray.callback_url,
                             json: true,
@@ -43,8 +56,6 @@ const server = http.createServer((req, res) => {
                                 description: 'Image pulled, service updated',
                                 context: 'Deploying to our webserver'
                             }
-                        }).catch(e => {
-                            throw e;
                         });
                         res.statusCode = 200;
                         res.end(JSON.stringify({state: 'success'}));
